@@ -1,10 +1,8 @@
 package com.example.resume.submission;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.resume.screeningresult.ScreeningResult;
+import jakarta.persistence.*;
 import jakarta.transaction.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +31,10 @@ public class Submission {
     private SubmissionStatus status;
 
     private LocalDateTime createdAt;
+
+    @OneToOne(
+            mappedBy = "submission"
+    )
+    private ScreeningResult screeningResult;
 
 }
