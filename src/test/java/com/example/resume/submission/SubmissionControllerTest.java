@@ -15,8 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,7 +46,7 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
     @MockitoBean
     private MlClientService mlClientService;
 
-    @Test
+    @Test(priority = 1)
     @Transactional
     public void createSubmission() throws Exception {
 
@@ -66,7 +69,7 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
 
     }
 
-    @Test
+    @Test(priority = 2)
     public void SubmissionIfMlPredictionFails() throws Exception{
         when(mlClientService.predict(anyString(),anyString())).thenThrow(new RuntimeException("Cannot predict"));
 
@@ -76,7 +79,25 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
                                     "jobDescription": "Backend developer job"
                 }
                 """;
-        mockMvc.perform(post("/api/v1/submissions").contentType(MediaType.APPLICATION_JSON).content(requestbody)).andDo(print()).andExpect(jsonPath("$.submissionStatus").value("FAILED"));
+        mockMvc.perform(post("/api/v1/submissions").contentType(MediaType.APPLICATION_JSON).content(requestbody)).andExpect(status().isOk()).andDo(print()).andExpect(jsonPath("$.submissionStatus").value("FAILED"));
+
+        Assert.assertEquals(submissionRepository.findAll().size(),2);
+    }
+
+    @Test(priority = 3)
+    public void getSubmissionByIdIfSubmissionExists() throws Exception{
+
+        Submission submission = new Submission();
+        submission.setResumeText("Java Spring Boot resume");
+        submission.setJobDescription("Backend developer job");
+        submission.setStatus(SubmissionStatus.SCORED);
+        submission.setCreatedAt(LocalDateTime.now());
+        Submission saved = submissionRepository.save(submission);
+
+        mockMvc.perform(get("/api/v1/submissions/"+saved.getId())).
+                andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.resumeText").value("Java Spring Boot resume"))
+                .andExpect(jsonPath("$.jobDescription").value("Backend developer job"));
 
     }
 
