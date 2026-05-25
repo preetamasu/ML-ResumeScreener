@@ -1,6 +1,9 @@
 package com.example.resume.submission;
 
 import com.example.resume.exception.ResourceNotFoundException;
+import com.example.resume.ml.MlClientService;
+import com.example.resume.ml.MlPredictionResponse;
+import com.example.resume.screeningresult.ScreeningResultService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,9 +14,13 @@ import java.util.stream.Collectors;
 public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
+    private final MlClientService mlClientService;
+    private final ScreeningResultService screeningResultService;
 
-    public SubmissionService(SubmissionRepository submissionRepository){
+    public SubmissionService(SubmissionRepository submissionRepository,MlClientService mlClientService,ScreeningResultService screeningResultService){
         this.submissionRepository = submissionRepository;
+        this.mlClientService= mlClientService;
+        this.screeningResultService = screeningResultService;
     }
 
     public List<SubmissionResponse> getAllSubmissions(){
@@ -26,8 +33,27 @@ public class SubmissionService {
           submission.setJobDescription(submissionRequest.jobDescription());
           submission.setStatus(SubmissionStatus.PENDING);
           submission.setCreatedAt(LocalDateTime.now());
-          submissionRepository.save(submission);
-          return toResponse(submission);
+          Submission submission1 =  submissionRepository.save(submission);
+
+          try{
+              MlPredictionResponse predictionResponse = mlClientService.predict(
+                   submission1.getResumeText(),
+                   submission1.getJobDescription()
+              );
+              screeningResultService.createScreeningResult(submission1,predictionResponse);
+              submission1.setStatus(SubmissionStatus.SCORED);
+              Submission scoredSubmission = submissionRepository.save(submission1);
+
+              return toResponse(scoredSubmission);
+
+          }
+          catch(Exception exception){
+              submission1.setStatus(SubmissionStatus.FAILED);
+              Submission failedSubmission = submissionRepository.save(submission1);
+
+              return toResponse(failedSubmission);
+          }
+
     }
 
 

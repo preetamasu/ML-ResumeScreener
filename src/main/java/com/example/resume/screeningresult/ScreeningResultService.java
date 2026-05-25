@@ -6,6 +6,7 @@ import com.example.resume.ml.MlPredictionResponse;
 import com.example.resume.submission.Submission;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,7 @@ public class ScreeningResultService {
         result.setMatchScore(response.matchScore());
         result.setExplanation(response.explanation());
         result.setModelVersion(response.modelVersion());
+        result.setCreatedAt(LocalDateTime.now());
         screeningResultRepository.save(result);
        return toResponse(result);
     }
@@ -43,8 +45,8 @@ public class ScreeningResultService {
                 result.getId(),
                 result.getSubmission().getId(),
                 result.getInterviewProbability(),
-                result.getModelVersion(),
                 result.getMatchScore(),
+                result.getModelVersion(),
                 result.getExplanation(),
                 result.getCreatedAt());
 
