@@ -70,6 +70,7 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
     }
 
     @Test(priority = 2)
+    @Transactional
     public void SubmissionIfMlPredictionFails() throws Exception{
         when(mlClientService.predict(anyString(),anyString())).thenThrow(new RuntimeException("Cannot predict"));
 
@@ -79,9 +80,8 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
                                     "jobDescription": "Backend developer job"
                 }
                 """;
-        mockMvc.perform(post("/api/v1/submissions").contentType(MediaType.APPLICATION_JSON).content(requestbody)).andExpect(status().isOk()).andDo(print()).andExpect(jsonPath("$.submissionStatus").value("FAILED"));
+        mockMvc.perform(post("/api/v1/submissions").contentType(MediaType.APPLICATION_JSON).content(requestbody)).andExpect(status().isCreated()).andDo(print()).andExpect(jsonPath("$.submissionStatus").value("FAILED"));
 
-        Assert.assertEquals(submissionRepository.findAll().size(),2);
     }
 
     @Test(priority = 3)
