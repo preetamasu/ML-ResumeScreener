@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ResumeScreenerSuite" >
+    <test name="All Tests">
+        <classes>
+            <class name="com.example.resume.ResumeApplicationTests"/>
+            <class name="com.example.resume.submission.SubmissionControllerTest"/>
+            <class name="com.example.resume.submission.SubmissionServiceTest"/>
+        </classes>
+    </test>
+</suite>
