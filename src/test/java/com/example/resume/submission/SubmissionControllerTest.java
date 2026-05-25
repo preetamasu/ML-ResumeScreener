@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.LocalDateTime;
@@ -107,6 +108,28 @@ public class SubmissionControllerTest extends AbstractTestNGSpringContextTests {
 
     }
 
+    @Test
+    @Transactional
+    public void getAllSubmission() throws Exception{
+        Submission submission1 = new Submission();
+        submission1.setResumeText("Java Spring Boot resume");
+        submission1.setJobDescription("Backend developer job");
+        submission1.setStatus(SubmissionStatus.SCORED);
+        submission1.setCreatedAt(LocalDateTime.now());
+        submissionRepository.save(submission1);
 
+        Submission submission2 = new Submission();
+        submission2.setResumeText("React frontend resume");
+        submission2.setJobDescription("Frontend developer job");
+        submission2.setStatus(SubmissionStatus.SCORED);
+        submission2.setCreatedAt(LocalDateTime.now());
+        submissionRepository.save(submission2);
+
+        mockMvc.perform(get("/api/v1/submissions")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].resumeText").value("Java Spring Boot resume"))
+                .andExpect(jsonPath("$[1].resumeText").value("React frontend resume"));
+
+    }
 
 }
