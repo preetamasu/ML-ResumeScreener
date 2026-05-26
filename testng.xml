@@ -9,8 +9,12 @@
     </test>
     <test name="Integration tests">
         <classes>
-            <class name="com.example.resume.submission.SubmissionControllerTest"></class>
-
+            <class name="com.example.resume.submission.SubmissionControllerTest"/>
+        </classes>
+    </test>
+    <test name="Functional tests">
+        <classes>
+            <class name="com.example.resume.submission.SubmissionFunctionalTests"/>
         </classes>
     </test>
 </suite>
