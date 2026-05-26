@@ -60,10 +60,10 @@ public class SubmissionServiceTest {
 
         SubmissionResponse response = submissionService.getSubmissionById(1L);
 
-        Assert.assertEquals(1L,response.id());
-        Assert.assertEquals("Java Spring Boot resume",response.resumeText());
-        Assert.assertEquals("Backend developer job",response.jobDescription());
-        Assert.assertEquals(SubmissionStatus.PENDING,response.submissionStatus());
+        Assert.assertEquals(response.id(),1L);
+        Assert.assertEquals(response.resumeText(),"Java Spring Boot resume");
+        Assert.assertEquals(response.jobDescription(),"Backend developer job");
+        Assert.assertEquals(response.submissionStatus(),SubmissionStatus.PENDING);
 
         verify(submissionRepository,times(1)).findById(1L);
     }
