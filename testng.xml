@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="ResumeScreenerSuite"  >
+<suite name="ResumeScreenerSuite" parallel="tests" thread-count="3"  >
     <test name="Unit tests">
         <classes>
             <class name="com.example.resume.submission.SubmissionServiceTest"/>
+
             <class name="com.example.resume.screeningresult.ScreeningResultServiceTest"/>
         </classes>
     </test>
